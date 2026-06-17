@@ -1,0 +1,1012 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <meta name="theme-color" content="#0b1020" />
+  <title>Calibración EA FC — Torneo</title>
+  <script src="https://html2canvas.hertzen.com/dist/html2canvas.min.js"></script>
+  <style>
+    :root{
+      --bg0:#070b16;
+      --bg1:#0b1020;
+      --bg2:#111a33;
+      --card: rgba(15, 20, 40, .72);
+      --card2: rgba(255,255,255,.06);
+      --line: rgba(255,255,255,.11);
+      --text:#eef2ff;
+      --muted:#aab4d7;
+      --accent:#7c5cff;
+      --accent2:#20d3ff;
+      --good:#2ee59d;
+      --warn:#ffb84d;
+      --bad:#ff6b7a;
+      --shadow: 0 22px 70px rgba(0,0,0,.42);
+      --radius: 24px;
+      --radius2: 18px;
+    }
+    *{box-sizing:border-box}
+    html,body{height:100%}
+    body{
+      margin:0;
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      color:var(--text);
+      background:
+        radial-gradient(1200px 700px at 20% 0%, rgba(124,92,255,.22), transparent 55%),
+        radial-gradient(1000px 600px at 100% 10%, rgba(32,211,255,.16), transparent 45%),
+        radial-gradient(900px 600px at 50% 100%, rgba(46,229,157,.12), transparent 40%),
+        linear-gradient(180deg, var(--bg0), var(--bg1) 48%, #060913 100%);
+      
+      /* ESTAS TRES LÍNEAS ARREGLAN EL FONDO */
+      background-attachment: fixed;
+      background-size: cover;
+      background-repeat: no-repeat;
+
+      overflow-x:hidden;
+    }
+    .app{
+      min-height:100%;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      padding:16px;
+      padding-bottom:24px;
+    }
+    .shell{
+      width:min(100%, 760px);
+      min-height:min(100vh - 32px, 900px);
+      display:flex;
+      flex-direction:column;
+      gap:14px;
+      position:relative;
+    }
+    .topbar{
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      flex-wrap:wrap; /* Evita que los elementos se superpongan en móviles */
+      gap:12px;
+      padding:8px 4px 0;
+      user-select:none;
+    }
+    .brand{
+      display:flex; align-items:center; gap:12px;
+      min-width:0;
+    }
+    .logo{
+      width:42px; height:42px; border-radius:14px;
+      background:
+      linear-gradient(135deg, rgba(124,92,255,1), rgba(32,211,255,1));
+      box-shadow: 0 10px 30px rgba(124,92,255,.32);
+      position:relative;
+      overflow:hidden;
+      flex-shrink: 0;
+    }
+    .logo:before{
+      content:"";
+      position:absolute; inset:8px;
+      border-radius:10px;
+      border:1px solid rgba(255,255,255,.32);
+    }
+    .logo:after{
+      content:"";
+      position:absolute; width:140%; height:140%; left:-20%; top:-20%;
+      background:linear-gradient(115deg, transparent 35%, rgba(255,255,255,.38) 50%, transparent 65%);
+      transform:translateX(-55%) rotate(18deg);
+      animation: sheen 8s linear infinite;
+      opacity:.7;
+    }
+    @keyframes sheen{to{transform:translateX(55%) rotate(18deg)}}
+    .brand h1{margin:0; font-size:15px; line-height:1.05; letter-spacing:.2px}
+    .brand p{margin:3px 0 0; color:var(--muted); font-size:12px}
+    .chip{
+      display:inline-flex; align-items:center; gap:8px;
+      padding:8px 12px;
+      border:1px solid var(--line);
+      background:rgba(255,255,255,.04);
+      border-radius:999px;
+      color:var(--muted);
+      font-size:12px;
+      white-space:nowrap;
+      backdrop-filter: blur(14px);
+    }
+    .card{
+      background: linear-gradient(180deg, rgba(255,255,255,.06), rgba(255,255,255,.03)) , var(--card);
+      border:1px solid rgba(255,255,255,.11);
+      box-shadow: var(--shadow);
+      border-radius: var(--radius);
+      backdrop-filter: blur(18px);
+      overflow:hidden;
+      position:relative;
+    }
+    .hero{
+      padding:22px;
+      display:grid;
+      gap:16px;
+      grid-template-columns: 1fr;
+      align-content:start;
+      min-height: 240px;
+    }
+    .hero h2{margin:0; font-size: clamp(28px, 7vw, 50px); line-height:1.01; letter-spacing:-.04em}
+    .hero p{margin:0; color:var(--muted); font-size:15px; line-height:1.55; max-width:58ch}
+    .hero-grid{
+      display:grid;
+      gap:12px;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+    .stat{
+      padding:14px 14px 13px;
+      border-radius:18px;
+      border:1px solid rgba(255,255,255,.09);
+      background: rgba(255,255,255,.035);
+    }
+    .stat strong{display:block; font-size:18px; margin-bottom:4px}
+    .stat span{display:block; color:var(--muted); font-size:12px; line-height:1.35}
+    .cta-row{display:flex; flex-wrap:wrap; gap:10px; margin-top:4px}
+    button{
+      font:inherit;
+    }
+    .btn{
+      appearance:none; border:0; cursor:pointer; user-select:none;
+      padding:14px 16px;
+      border-radius:16px;
+      color:var(--text);
+      background: linear-gradient(135deg, rgba(124,92,255,1), rgba(32,211,255,.92));
+      box-shadow: 0 12px 28px rgba(124,92,255,.25);
+      transition: transform .18s ease, box-shadow .18s ease, filter .18s ease, opacity .18s ease;
+      font-weight:700;
+      letter-spacing:.2px;
+      display:inline-flex; align-items:center; justify-content:center; gap:10px;
+      min-height:48px;
+    }
+    .btn:hover{transform: translateY(-1px); filter:saturate(1.05)}
+    .btn:active{transform: translateY(1px) scale(.99)}
+    .btn.secondary{
+      background: rgba(255,255,255,.05);
+      box-shadow:none;
+      border:1px solid var(--line);
+      color:var(--text);
+    }
+    .btn.ghost{background:transparent; box-shadow:none; border:1px solid var(--line); color:var(--muted)}
+    .btn[disabled]{opacity:.45; cursor:not-allowed; transform:none}
+    .content{
+      flex:1;
+      display:flex;
+      align-items:stretch;
+      min-height:0;
+    }
+    .screen{
+      width:100%;
+      min-height:100%;
+      display:none;
+    }
+    .screen.active{display:block; animation: screenIn .35s ease both}
+    @keyframes screenIn{from{opacity:0; transform: translateY(8px) scale(.99)} to{opacity:1; transform:none}}
+
+    .question-wrap{
+      display:grid;
+      gap:12px;
+      padding:14px;
+    }
+    .progress-box{
+      padding:14px 14px 12px;
+      display:grid;
+      gap:10px;
+    }
+    .progress-head{
+      display:flex; justify-content:space-between; align-items:center; gap:12px;
+      font-size:12px; color:var(--muted);
+    }
+    .bar{
+      height:12px;
+      border-radius:999px;
+      background:rgba(255,255,255,.06);
+      overflow:hidden;
+      position:relative;
+      border:1px solid rgba(255,255,255,.08);
+    }
+    .bar > span{
+      display:block; height:100%; width:0%;
+      border-radius:inherit;
+      background: linear-gradient(90deg, var(--accent), var(--accent2));
+      box-shadow: 0 0 24px rgba(32,211,255,.25);
+      transition: width .35s cubic-bezier(.2,.8,.2,1);
+    }
+    .q-card{
+      border-radius: var(--radius);
+      background: linear-gradient(180deg, rgba(255,255,255,.06), rgba(255,255,255,.025));
+      border:1px solid rgba(255,255,255,.11);
+      box-shadow: var(--shadow);
+      overflow:hidden;
+      transform-origin: center;
+      margin: 28px 0; /* <--- AÑADE ESTA LÍNEA */
+    }
+    .q-inner{
+      padding:18px;
+      display:grid;
+      gap:14px;
+    }
+    .q-top{
+      display:flex; justify-content:space-between; align-items:flex-start; gap:10px; flex-wrap:wrap;
+    }
+    .q-top .type{
+      display:inline-flex; align-items:center; gap:8px;
+      font-size:12px; color:var(--muted);
+      padding:6px 10px; border-radius:999px;
+      border:1px solid rgba(255,255,255,.08);
+      background: rgba(255,255,255,.04);
+    }
+    .q-top .count{font-size:12px; color:var(--muted); white-space:nowrap; padding-top:4px;}
+    .q-title{
+      margin:0;
+      font-size: clamp(21px, 5.3vw, 32px);
+      line-height:1.1;
+      letter-spacing:-.02em;
+    }
+    .q-sub{margin:0; color:var(--muted); line-height:1.5; font-size:14px}
+    .choices{
+      display:grid; gap:10px;
+      grid-template-columns: 1fr;
+    }
+    .choice{
+      width:100%;
+      text-align:left;
+      border-radius:18px;
+      border:1px solid rgba(255,255,255,.1);
+      background: rgba(255,255,255,.04);
+      color:var(--text);
+      padding:15px 14px;
+      transition: transform .16s ease, border-color .16s ease, background .16s ease, box-shadow .16s ease;
+      display:flex; align-items:center; gap:12px; justify-content:space-between;
+      position:relative;
+      overflow:hidden;
+      touch-action: manipulation;
+    }
+    .choice:hover{transform: translateY(-1px); border-color: rgba(255,255,255,.18)}
+    .choice:active{transform: translateY(1px) scale(.995)}
+    .choice.selected{
+      border-color: rgba(32,211,255,.55);
+      background: linear-gradient(135deg, rgba(124,92,255,.28), rgba(32,211,255,.16));
+      box-shadow: 0 0 0 1px rgba(32,211,255,.1) inset, 0 12px 30px rgba(0,0,0,.16);
+    }
+    .choice .left{display:flex; align-items:center; gap:12px; min-width:0}
+    .dot{
+      width:18px; height:18px; border-radius:999px;
+      border:1px solid rgba(255,255,255,.2);
+      flex:none;
+      background: rgba(255,255,255,.03);
+      box-shadow: inset 0 0 0 5px transparent;
+      transition: all .18s ease;
+    }
+    .choice.selected .dot{border-color:rgba(32,211,255,.95); box-shadow: inset 0 0 0 5px rgba(32,211,255,.95)}
+    .choice .label{font-weight:650; font-size:15px; line-height:1.3}
+    .choice .meta{color:var(--muted); font-size:12px; text-align:right; white-space:nowrap; margin-left:12px}
+
+    .slider-wrap{
+      display:grid; gap:10px;
+      padding:6px 2px 2px;
+    }
+    input[type="range"]{
+      width:100%; appearance:none; height:8px; border-radius:999px; outline:none;
+      background: linear-gradient(90deg, var(--accent), var(--accent2));
+      border:1px solid rgba(255,255,255,.08);
+    }
+    input[type="range"]::-webkit-slider-thumb{
+      appearance:none; width:28px; height:28px; border-radius:50%;
+      background:#fff; border:4px solid var(--accent2); box-shadow:0 10px 20px rgba(0,0,0,.25);
+    }
+    input[type="range"]::-moz-range-thumb{
+      width:28px; height:28px; border-radius:50%; background:#fff; border:4px solid var(--accent2);
+    }
+    .scale{
+      display:flex; justify-content:space-between; gap:10px; font-size:12px; color:var(--muted);
+    }
+
+    .bottom-actions{
+      display:flex; gap:10px; justify-content:space-between; align-items:center;
+      padding: 0 4px 6px;
+      flex-wrap: wrap;
+    }
+    .bottom-actions .left,
+    .bottom-actions .right{display:flex; gap:10px; align-items:center; flex-wrap:wrap;}
+    .note{font-size:12px; color:var(--muted)}
+
+    .result-card{
+      padding:20px;
+      display:grid;
+      gap:16px;
+    }
+    .result-badge{
+      display:inline-flex; align-items:center; gap:8px;
+      width:max-content;
+      padding:9px 12px;
+      border-radius:999px;
+      background: rgba(255,255,255,.05);
+      border:1px solid rgba(255,255,255,.1);
+      color:var(--muted);
+      font-size:12px;
+    }
+    .elo-row{display:grid; gap:8px}
+    .elo-big{
+      font-size: clamp(58px, 15vw, 92px);
+      line-height: .92;
+      letter-spacing: -.06em;
+      margin: 0;
+    }
+    .elo-sub{margin:0; color:var(--muted); line-height:1.5}
+    .meter{
+      display:grid;
+      gap:8px;
+      padding:14px;
+      border-radius:18px;
+      border:1px solid rgba(255,255,255,.09);
+      background: rgba(255,255,255,.03);
+    }
+    .meter .line{
+      height: 14px; border-radius:999px; overflow:hidden; border:1px solid rgba(255,255,255,.08);
+      background: rgba(255,255,255,.05);
+    }
+    .meter .line > span{display:block; height:100%; width:0%; transition: width .8s cubic-bezier(.2,.8,.2,1); background: linear-gradient(90deg, var(--bad), var(--warn), var(--good))}
+    .split{
+      display:grid; gap:12px;
+      grid-template-columns: repeat(2, minmax(0,1fr));
+    }
+    .panel{
+      padding:14px;
+      border-radius:18px;
+      border:1px solid rgba(255,255,255,.09);
+      background: rgba(255,255,255,.035);
+      min-height:108px;
+    }
+    .panel b{display:block; font-size:13px; color:var(--muted); margin-bottom:8px}
+    .panel strong{display:block; font-size:20px; margin-bottom:4px}
+    .panel span{display:block; color:var(--muted); font-size:12px; line-height:1.4}
+
+    .tag-row{display:flex; flex-wrap:wrap; gap:8px}
+    .tag{
+      padding:8px 10px;
+      border-radius:999px;
+      font-size:12px;
+      background: rgba(255,255,255,.05);
+      border:1px solid rgba(255,255,255,.08);
+      color:var(--text);
+    }
+    .foot{
+      padding:0 4px 6px;
+      color:var(--muted);
+      font-size:12px;
+      line-height:1.45;
+      text-align:center;
+    }
+    .fade-out{animation: fadeOut .16s ease both}
+    @keyframes fadeOut{to{opacity:0; transform: translateY(6px) scale(.99)}}
+    .floating-glow{
+      position:absolute; inset:auto -50px 50% auto; width:180px; height:180px; border-radius:50%;
+      background: radial-gradient(circle, rgba(32,211,255,.2), transparent 64%);
+      filter: blur(10px); pointer-events:none; opacity:.75;
+      animation: drift 12s ease-in-out infinite alternate;
+    }
+    @keyframes drift{from{transform: translate3d(0,0,0)} to{transform: translate3d(-22px, 20px,0)}}
+
+    .hidden{display:none !important}
+
+    @media (min-width: 720px){
+      .hero{padding:28px}
+      .question-wrap{padding:16px}
+      .result-card{padding:26px}
+    }
+    @media (max-width: 420px){
+      .hero-grid,.split{grid-template-columns:1fr}
+      .bottom-actions{flex-direction:column; align-items:stretch}
+      .bottom-actions .left,.bottom-actions .right{width:100%; justify-content:space-between}
+      .btn{width:100%}
+      .choice{padding:14px 13px}
+      .choice .meta{white-space:normal}
+    }
+
+    .ranking-card {
+      margin-top: 14px;
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+    .ranking-header { font-size: 18px; font-weight: 700; margin: 0; display:flex; align-items:center; gap:8px;}
+    .submit-row { display: flex; gap: 8px; }
+    .input-name {
+      flex: 1;
+      background: rgba(255,255,255,.05);
+      border: 1px solid rgba(255,255,255,.1);
+      color: var(--text);
+      padding: 10px 14px;
+      border-radius: 12px;
+      font-family: inherit;
+      font-size: 14px;
+      outline: none;
+      transition: border-color .2s;
+    }
+    .input-name:focus { border-color: var(--accent2); }
+    .ranking-list { display: flex; flex-direction: column; gap: 8px; }
+    .rank-item {
+      display: flex; align-items: center; justify-content: space-between;
+      background: rgba(255,255,255,.03); padding: 12px 14px;
+      border-radius: 12px; font-size: 14px; border: 1px solid rgba(255,255,255,.05);
+    }
+    .rank-item.top-1 { border-color: rgba(255, 215, 0, 0.4); background: linear-gradient(90deg, rgba(255,215,0,0.08), transparent); }
+    .rank-item.top-2 { border-color: rgba(192, 192, 192, 0.4); background: linear-gradient(90deg, rgba(192,192,192,0.05), transparent); }
+    .rank-item.top-3 { border-color: rgba(205, 127, 50, 0.4); background: linear-gradient(90deg, rgba(205,127,50,0.05), transparent); }
+    .rank-pos { font-weight: bold; width: 28px; color: var(--muted); }
+    .top-1 .rank-pos { color: #ffd700; font-size:16px;}
+    .top-2 .rank-pos { color: #c0c0c0; }
+    .top-3 .rank-pos { color: #cd7f32; }
+    .rank-name { flex: 1; font-weight: 650; }
+    .rank-elo { font-family: monospace; font-size: 16px; font-weight: bold; color: var(--accent2); }
+  </style>
+</head>
+<body>
+  <div class="app">
+    <div class="shell">
+      <div class="topbar">
+        <div class="brand">
+          <div class="logo" aria-hidden="true"></div>
+          <div>
+            <h1>Calibración EA FC</h1>
+            <p>Descubre tu nivel inicial</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="content">
+        <section class="screen active" id="screenStart">
+          <div class="card hero">
+            <div class="floating-glow"></div>
+            
+            <h2>Calcula tu nivel inicial para el torneo.</h2>
+            <p>Responde con sinceridad para que los cruces del torneo estén bien equilibrados y sea divertido para todos. Mezclaremos tu experiencia, control de mecánicas y visión de juego.</p>
+            <div class="hero-grid">
+              <div class="stat"><strong>20 Preguntas</strong><span>Breves y directas. No tardarás ni 3 minutos.</span></div>
+              <div class="stat"><strong>600–2000 Elo</strong><span>Te daremos una puntuación y un desglose de tu estilo.</span></div>
+            </div>
+            <div class="cta-row">
+              <button class="btn" id="startBtn">Empezar el test</button>
+              <button class="btn secondary" id="restoreBtn">Ver mi resultado anterior</button>
+            </div>
+          </div>
+        </section>
+
+        <section class="screen" id="screenQuiz">
+          <div class="progress-box card">
+            <div class="progress-head">
+              <span id="progressText">Pregunta 1 de 20</span>
+              <span id="progressPercent">0%</span>
+            </div>
+            <div class="bar"><span id="progressBar"></span></div>
+          </div>
+          <div class="q-card" id="qCard">
+            <div class="q-inner">
+              <div class="q-top">
+                <span class="type" id="qType">Bloque 1</span>
+                <span class="count" id="qCount">1/20</span>
+              </div>
+              <h3 class="q-title" id="qTitle"></h3>
+              <p class="q-sub" id="qSub"></p>
+              <div class="choices hidden" id="choiceList"></div>
+              <div class="slider-wrap hidden" id="sliderWrap">
+                <input id="slider" type="range" min="0" max="100" step="1" value="50" />
+                <div class="scale">
+                  <span id="sliderLeft">Nada</span>
+                  <span id="sliderValue">50</span>
+                  <span id="sliderRight">Mucho</span>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="bottom-actions">
+            <div class="left">
+              <button class="btn ghost" id="backBtn">Atrás</button>
+            </div>
+          </div>
+        </section>
+
+        <section class="screen" id="screenResult">
+          <div class="card result-card">
+            <div class="result-badge" id="resultBadge">Resultado</div>
+            <div class="elo-row">
+              <h3 class="elo-big" id="eloValue">0000</h3>
+              <p class="elo-sub" id="eloDesc">—</p>
+            </div>
+            <div class="meter">
+              <div style="display:flex; justify-content:space-between; gap:12px; align-items:center">
+                <strong id="meterLabel">Nivel calculado</strong>
+                <span class="note" id="meterRange">600 — 2000</span>
+              </div>
+              <div class="line"><span id="meterFill"></span></div>
+              <div class="note" id="meterNote">Este es tu Elo inicial sugerido para el cuadro del torneo. Haz una captura y compártela. ¡Que gane el mejor!</div>
+            </div>
+            <div class="split">
+              <div class="panel">
+                <b>Memoria Muscular</b>
+                <strong id="scoreMando">—</strong>
+                <span>Agilidad de dedos, uso simultáneo de botones y control del mando.</span>
+              </div>
+              <div class="panel">
+                <b>IQ Futbolístico</b>
+                <strong id="scoreIq">—</strong>
+                <span>Lectura de espacios, visión de juego y toma de decisiones.</span>
+              </div>
+              <div class="panel">
+                <b>Mecánicas</b>
+                <strong id="scoreMeta">—</strong>
+                <span>Dominio de las mecánicas "rotas" o avanzadas exclusivas de EA FC.</span>
+              </div>
+              <div class="panel">
+                <b>Resistencia</b>
+                <strong id="scoreTilt">—</strong>
+                <span>Sangre fría. Capacidad para no rendirse si vas perdiendo o sufres presión.</span>
+              </div>
+            </div>
+            <div>
+              <b style="display:block; margin:0 0 8px; font-size:13px; color:var(--muted)">Tu Perfil de Jugador</b>
+              <div class="tag-row" id="tagRow"></div>
+            </div>
+            <div class="cta-row">
+              <button class="btn" id="restartBtn">Repetir el test</button>
+              <button class="btn secondary" id="saveBtn">Guardar resultado</button>
+            </div>
+          </div>
+          <div class="card ranking-card">
+            <h3 class="ranking-header">🏆 Ranking Oficial</h3>
+            
+            <div class="submit-row" id="rankingForm">
+              <input type="text" id="playerName" class="input-name" placeholder="Tu nombre o apodo..." maxlength="12">
+              <button class="btn" id="submitScoreBtn" style="min-height: 40px; padding: 0 16px; border-radius: 12px; font-size:14px;">Subir mi nivel</button>
+            </div>
+            <p id="rankingMsg" class="note hidden" style="color: var(--good); margin:0;">¡Estás dentro del ranking!</p>
+
+            <div class="ranking-list" id="rankingList">
+              <div class="note" style="text-align:center; padding: 10px;">Cargando jugadores...</div>
+            </div>
+          </div>
+        </section>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // 1. PREGUNTAS BASE (Filtro para elegir rama)
+    const BASE_QUESTIONS = [
+      {
+        type: 'Filtro Base', title: '¿Qué tipo de jugador eres en general?', sub: 'Desde juegos de móvil hasta rankeds hardcore.', kind: 'choice', bucket: 'mando',
+        options: [
+          { label: 'Súper casual (juegos muy tranquilos, móvil, puzzles)', score: 0 },
+          { label: 'Jugador de historia (aventuras de 1 jugador, sin estrés competitivo)', score: 1 },
+          { label: 'Competitivo habitual (juego online, me gusta ganar pero sin locuras)', score: 2 },
+          { label: 'Tryhard / Hardcore (rankeds de LoL, Valorant, CS...)', score: 3 }
+        ]
+      },
+      {
+        type: 'Filtro Base', title: 'Tu historia con la saga FIFA / EA FC:', sub: '¿Cuántas horas de tu vida se han quedado en este juego?', kind: 'choice', bucket: 'iq',
+        options: [
+          { label: 'Ninguna o casi ninguna', score: 0 },
+          { label: 'He jugado con amigos o hace años', score: 1 },
+          { label: 'Juego cada año pero de forma casual', score: 2 },
+          { label: 'Horas infinitas (Ultimate Team, FUT Champions, Torneos)', score: 3 }
+        ]
+      },
+      {
+        type: 'Filtro Base', title: 'Si te doy el mando y te digo "pulsa R1 + L2", ¿qué haces?', sub: 'Mide tu memoria muscular instintiva.', kind: 'choice', bucket: 'mando',
+        options: [
+          { label: 'Tengo que mirar el mando para buscarlos', score: 0 },
+          { label: 'Tardo un segundo pero los encuentro', score: 1 },
+          { label: 'Los pulso sin mirar', score: 2 },
+          { label: 'Memoria muscular absoluta', score: 3 }
+        ]
+      }
+    ];
+
+    // RUTA A: Casuals (Techo de Elo: 900)
+    const PATH_A = [
+      { type: 'Casual', title: 'Cuando tienes la pelota en un partido:', sub: 'En el centro del campo.', kind: 'choice', bucket: 'iq', options: [{label:'Me pongo nervioso y la pierdo', score:0}, {label:'Se la paso al primero que veo', score:1}, {label:'Intento avanzar hacia la portería', score:2}, {label:'Busco a los delanteros', score:3}] },
+      { type: 'Casual', title: '¿Sueles apretar el botón de correr (R2/RT)?', sub: 'Ese botón es peligroso si se abusa.', kind: 'choice', bucket: 'iq', options: [{label:'¿Cuál es el de correr?', score:0}, {label:'Sí, lo dejo pulsado casi siempre', score:1}, {label:'A veces lo suelto si me presionan', score:2}, {label:'Solo lo uso con espacios libres', score:3}] },
+      { type: 'Casual', title: '¿Qué pasa si vas perdiendo 3-0 en el minuto 20?', sub: 'Mentalidad en los torneos de amigos.', kind: 'choice', bucket: 'tilt', options: [{label:'Tiro el mando / Me rindo mentalmente', score:0}, {label:'Me enfado y juego a dar patadas', score:1}, {label:'Intento que no me metan más', score:2}, {label:'Peleo por meter el gol de la honra', score:3}] },
+      { type: 'Casual', title: '¿Cuánto te agobias si hay muchos jugadores en tu área?', sub: 'Ese momento donde no sale el balón.', kind: 'choice', bucket: 'tilt', options: [{label:'Pánico total, le doy a todos los botones', score:0}, {label:'Me pongo nervioso y la pierdo', score:1}, {label:'Intento despejar como sea', score:2}, {label:'Mantengo la calma y busco el pase seguro', score:3}] }
+    ];
+
+    // RUTA B: Normales (Techo de Elo: 1500)
+    const PATH_B = [
+      { type: 'Visión', title: 'Si el rival se encierra, ¿miras el radar de abajo?', sub: 'El minimapa salva partidos.', kind: 'choice', bucket: 'iq', options: [{label:'Nunca me fijo en eso', score:0}, {label:'Solo si no tengo a quién pasar', score:1}, {label:'A veces para hacer cambios de banda', score:2}, {label:'Lo miro constantemente', score:3}] },
+      { type: 'Defensa', title: 'A la hora de defender, tú...', sub: 'El arte de no regalar huecos.', kind: 'choice', bucket: 'iq', options: [{label:'Voy a lo loco a por el que tiene el balón', score:0}, {label:'Selecciono al central y me voy a por él', score:1}, {label:'Intento aguantar con el MCD', score:2}, {label:'Corto líneas de pase y aguanto', score:3}] },
+      { type: 'Mentalidad', title: 'Te meten un gol de rebote absurdo en el min 80:', sub: '¿Cómo reaccionas?', kind: 'choice', bucket: 'tilt', options: [{label:'Me tilteo y pierdo la concentración', score:0}, {label:'Me acelero para empatar rápido', score:1}, {label:'Me quejo pero sigo', score:2}, {label:'Reseteo mental y sigo mi plan', score:3}] },
+      { type: 'Táctica', title: 'Tácticas e instrucciones de equipo:', sub: '¿Te has metido al menú de formación?', kind: 'choice', bucket: 'meta', options: [{label:'Juego con lo que viene por defecto', score:0}, {label:'Cambio la formación y ya', score:1}, {label:'Copio alguna de Youtube/TikTok', score:2}, {label:'Las ajusto yo a mi estilo de juego', score:3}] },
+      { type: 'Definición', title: '¿Qué tan letal eres en el 1 vs 1 ante el portero?', sub: 'Frialdad en el área.', kind: 'choice', bucket: 'mando', options: [{label:'Me pongo nervioso y la tiro al muñeco', score:0}, {label:'Fallo bastantes, es una lotería', score:1}, {label:'Suelo meter las más claras', score:2}, {label:'Hielo en las venas, no perdono una', score:3}] }
+    ];
+
+    // RUTA C: Tryhards (Techo de Elo: 2400)
+    const PATH_C = [
+      { type: 'Avanzado', title: '¿Cómo cambias de jugador en defensa?', sub: 'Fundamental contra rivales buenos.', kind: 'choice', bucket: 'mando', options: [{label:'Spameo L1 hasta que toca el que quiero', score:0}, {label:'Uso L1 y rezo a veces', score:1}, {label:'L1 y algo de joystick derecho', score:2}, {label:'Uso el Joystick Derecho para ser preciso', score:3}] },
+      { type: 'Avanzado', title: 'Uso del Timed Finishing (Tiro en verde):', sub: 'Mecánica pura de Tryhard.', kind: 'choice', bucket: 'meta', options: [{label:'No lo uso / Lo tengo desactivado', score:0}, {label:'A veces se me pone rojo por accidente', score:1}, {label:'Lo uso solo en tiros desde fuera', score:2}, {label:'Verdeo casi todo', score:3}] },
+      { type: 'Avanzado', title: 'Movimiento manual del Portero:', sub: '¿Mueves al portero hundiendo el R3?', kind: 'choice', bucket: 'meta', options: [{label:'¿El portero se mueve?', score:0}, {label:'Solo para sacarlo con Triángulo', score:1}, {label:'Lo muevo un poco en los córners', score:2}, {label:'Anticipo tiros y cruces moviéndolo', score:3}] },
+      { type: 'Avanzado', title: 'Player Lock (Bloqueo de jugador):', sub: 'Ese icono en forma de diamante en la cabeza.', kind: 'choice', bucket: 'meta', options: [{label:'No lo uso', score:0}, {label:'Sé hacerlo pero me lío', score:1}, {label:'Lo uso a veces para arrastrar defensas', score:2}, {label:'Constante, para recibir pases perfectos', score:3}] },
+      { type: 'Mentalidad', title: 'Vas ganando 2-1 min 85 y te activan "Presión Constante":', sub: 'El momento del pánico.', kind: 'choice', bucket: 'tilt', options: [{label:'Me tiemblan las manos y pierdo el balón', score:0}, {label:'Despejo al patadón siempre', score:1}, {label:'Abro el juego a las bandas y toco rápido', score:2}, {label:'Mantengo la calma, toco y busco el hueco libre', score:3}] }
+    ];
+
+    let QUESTIONS = [...BASE_QUESTIONS];
+    
+    const state = {
+      idx: 0,
+      answers: [],
+      values: [],
+      currentPath: null
+    };
+
+    const el = {
+      screenStart: document.getElementById('screenStart'),
+      screenQuiz: document.getElementById('screenQuiz'),
+      screenResult: document.getElementById('screenResult'),
+      startBtn: document.getElementById('startBtn'),
+      restoreBtn: document.getElementById('restoreBtn'),
+      restartBtn: document.getElementById('restartBtn'),
+      saveBtn: document.getElementById('saveBtn'),
+      backBtn: document.getElementById('backBtn'),
+      progressText: document.getElementById('progressText'),
+      progressPercent: document.getElementById('progressPercent'),
+      progressBar: document.getElementById('progressBar'),
+      qType: document.getElementById('qType'),
+      qCount: document.getElementById('qCount'),
+      qTitle: document.getElementById('qTitle'),
+      qSub: document.getElementById('qSub'),
+      choiceList: document.getElementById('choiceList'),
+      qCard: document.getElementById('qCard'),
+      eloValue: document.getElementById('eloValue'),
+      eloDesc: document.getElementById('eloDesc'),
+      meterFill: document.getElementById('meterFill'),
+      meterRange: document.getElementById('meterRange'),
+      resultBadge: document.getElementById('resultBadge'),
+      meterLabel: document.getElementById('meterLabel'),
+      scoreMando: document.getElementById('scoreMando'),
+      scoreIq: document.getElementById('scoreIq'),
+      scoreMeta: document.getElementById('scoreMeta'),
+      scoreTilt: document.getElementById('scoreTilt'),
+      tagRow: document.getElementById('tagRow')
+    };
+
+    function vibrate(ms=12){ try{ if (navigator.vibrate) navigator.vibrate(ms); }catch(e){} }
+
+    function showScreen(which){
+      [el.screenStart, el.screenQuiz, el.screenResult].forEach(s => s.classList.remove('active'));
+      which.classList.add('active');
+      window.scrollTo({top:0, behavior:'smooth'});
+    }
+
+    function setProgress(){
+      const pct = Math.round((state.idx / QUESTIONS.length) * 100);
+      el.progressText.textContent = `Pregunta ${Math.min(state.idx + 1, QUESTIONS.length)} de ${QUESTIONS.length}`;
+      el.progressPercent.textContent = `${pct}%`;
+      el.progressBar.style.width = `${pct}%`;
+      el.backBtn.disabled = state.idx === 0;
+    }
+
+    function evaluatePath() {
+      const score = (state.values[0] || 0) + (state.values[1] || 0) + (state.values[2] || 0);
+      let newPath = '';
+      if (score <= 3) newPath = 'A';
+      else if (score <= 6) newPath = 'B';
+      else newPath = 'C';
+
+      if (state.currentPath !== newPath) {
+        state.currentPath = newPath;
+        const branch = newPath === 'A' ? PATH_A : newPath === 'B' ? PATH_B : PATH_C;
+        QUESTIONS = [...BASE_QUESTIONS, ...branch];
+        state.answers.length = BASE_QUESTIONS.length;
+        state.values.length = BASE_QUESTIONS.length;
+      }
+    }
+
+    function renderQuestion(){
+      const q = QUESTIONS[state.idx];
+      setProgress();
+      el.qType.textContent = q.type;
+      el.qCount.textContent = `${state.idx + 1}/${QUESTIONS.length}`;
+      el.qTitle.textContent = q.title;
+      el.qSub.textContent = q.sub;
+      el.choiceList.classList.add('hidden');
+      el.qCard.classList.remove('fade-out');
+
+      el.choiceList.innerHTML = '';
+      q.options.forEach((opt, i) => {
+        const btn = document.createElement('button');
+        btn.className = 'choice';
+        if (state.answers[state.idx] === i) btn.classList.add('selected');
+        btn.innerHTML = `
+          <span class="left">
+            <span class="dot" aria-hidden="true"></span>
+            <span class="label">${opt.label}</span>
+          </span>
+        `;
+        
+        btn.addEventListener('click', () => {
+          state.answers[state.idx] = i;
+          state.values[state.idx] = opt.score;
+          vibrate(10);
+          
+          document.querySelectorAll('.choice').forEach(c => c.classList.remove('selected'));
+          btn.classList.add('selected');
+
+          setTimeout(() => {
+            if (state.idx === BASE_QUESTIONS.length - 1) evaluatePath();
+            
+            if (state.idx < QUESTIONS.length - 1) {
+              state.idx++;
+              renderQuestion();
+            } else {
+              renderResult(); // Salta directo a la pantalla de resultados en la última
+            }
+          }, 250); // Pequeño retraso para que vean qué han pulsado antes de avanzar
+        });
+        el.choiceList.appendChild(btn);
+      });
+      el.choiceList.classList.remove('hidden');
+    }
+
+    function scoreAnswers(){
+      let raw = { mando:0, iq:0, meta:0, tilt:0 };
+      let max = { mando:0, iq:0, meta:0, tilt:0 };
+
+      QUESTIONS.forEach((q, i) => {
+        let ans = state.values[i] || 0;
+        raw[q.bucket] += ans;
+        max[q.bucket] += 3;
+      });
+
+      const pct = (b) => max[b] ? Math.round((raw[b] / max[b]) * 100) : 0;
+
+      let elo = 400;
+      let totalRaw = raw.mando + raw.iq + raw.meta + raw.tilt;
+      let totalMax = max.mando + max.iq + max.meta + max.tilt;
+      let perf = totalRaw / totalMax; 
+
+      if (state.currentPath === 'A') elo = 400 + (perf * 500);
+      else if (state.currentPath === 'B') elo = 900 + (perf * 600);
+      else elo = 1500 + (perf * 900);
+
+      return {
+        elo: Math.round(elo),
+        mando: pct('mando'),
+        iq: pct('iq'),
+        meta: pct('meta'),
+        tilt: pct('tilt')
+      };
+    }
+
+    function labelForElo(elo){
+      if (elo < 700) return { label:'Calienta banquillos', desc:'Jugar a esto te va a costar, pero si marcas un gol lo celebrarás como un título.', tone:'bad'};
+      if (elo < 950) return { label:'Amateur', desc:'Tienes reflejos, pero el FIFA moderno te viene un poco grande. Toca sufrir y aprender.', tone:'warn'};
+      if (elo < 1250) return { label:'Peligroso', desc:'Ni muy novato ni un pro. Tienes el nivel exacto para dar algún susto a los favoritos.', tone:'warn'};
+      if (elo < 1600) return { label:'Candidato', desc:'Vas en serio al torneo. Tienes la base táctica y las manos para estar en rondas finales.', tone:'good'};
+      if (elo < 2000) return { label:'Abusón', desc:'Seguramente te lleves los piques de la tarde. Vas como favorito claro al título.', tone:'good'};
+      return { label:'Tryhard / Pro', desc:'Las mecánicas rotas no tienen secretos para ti. O ganas el torneo o será un fracaso.', tone:'good'};
+    }
+
+    function profileTags(data){
+      const tags = [];
+      if (data.mando >= 70) tags.push('Manos rápidas');
+      else if (data.mando <= 30) tags.push('Dedos de corcho');
+
+      if (data.iq >= 70) tags.push('Cerebro Táctico');
+      else if (data.iq <= 30) tags.push('Correcaminos');
+
+      if (data.meta >= 60) tags.push('Abusa del Meta');
+      else if (data.meta > 0 && data.meta < 30) tags.push('Juega Old-School');
+
+      if (data.tilt >= 70) tags.push('Sangre Fría');
+      else if (data.tilt <= 30) tags.push('Se tiltea rápido');
+
+      return tags;
+    }
+
+    function renderResult(){
+      const data = scoreAnswers();
+      const lbl = labelForElo(data.elo);
+      const meterPct = ((data.elo - 400) / (2400 - 400)) * 100;
+      
+      el.eloValue.textContent = String(data.elo);
+      el.eloDesc.textContent = lbl.desc;
+      el.resultBadge.textContent = lbl.label;
+      el.meterLabel.textContent = lbl.label;
+      if(el.meterRange) el.meterRange.textContent = '400 — 2400';
+      
+      el.scoreMando.textContent = `${data.mando}%`;
+      el.scoreIq.textContent = `${data.iq}%`;
+      el.scoreMeta.textContent = data.meta === 0 && state.currentPath === 'A' ? 'N/A' : `${data.meta}%`;
+      el.scoreTilt.textContent = `${data.tilt}%`;
+      
+      el.tagRow.innerHTML = '';
+      profileTags(data).forEach(tag => {
+        const span = document.createElement('span');
+        span.className = 'tag';
+        span.textContent = tag;
+        el.tagRow.appendChild(span);
+      });
+      
+      document.body.style.setProperty('--accent', data.elo >= 1600 ? '#2ee59d' : data.elo >= 1000 ? '#20d3ff' : '#7c5cff');
+      setTimeout(() => { el.meterFill.style.width = `${Math.max(0, Math.min(100, meterPct))}%`; }, 80);
+      
+      localStorage.setItem('eloCalibrationLast', JSON.stringify({ elo: data.elo, path: state.currentPath, ts: Date.now() }));
+      showScreen(el.screenResult);
+      fetchRanking();
+      vibrate([15, 20, 15]);
+    }
+
+    function prevQuestion(){
+      if (state.idx > 0){
+        state.idx--;
+        renderQuestion();
+      }
+    }
+
+    function startQuiz(){
+      QUESTIONS = [...BASE_QUESTIONS];
+      state.idx = 0;
+      state.currentPath = null;
+      state.answers = [];
+      state.values = [];
+      showScreen(el.screenQuiz);
+      renderQuestion();
+      vibrate(10);
+    }
+
+    function resetAll(){
+      startQuiz();
+    }
+
+    function restoreLast(){
+      const raw = localStorage.getItem('eloCalibrationLast');
+      if (!raw) return;
+      try{
+        const data = JSON.parse(raw);
+        // Generamos un resultado simulado rápido para que la pantalla cargue bonita
+        state.currentPath = data.path || 'B';
+        const dummyPerf = (data.elo - (state.currentPath==='A'?400:state.currentPath==='B'?900:1500)) / (state.currentPath==='A'?500:state.currentPath==='B'?600:900);
+        state.values = Array(8).fill(dummyPerf * 3); 
+        QUESTIONS = [...BASE_QUESTIONS, ...(state.currentPath==='A'?PATH_A:state.currentPath==='B'?PATH_B:PATH_C)];
+        renderResult();
+      }catch(e){}
+    }
+
+    el.startBtn.addEventListener('click', startQuiz);
+    el.restoreBtn.addEventListener('click', restoreLast);
+    el.restartBtn.addEventListener('click', resetAll);
+    el.saveBtn.addEventListener('click', () => {
+      const btn = el.saveBtn;
+      const card = document.querySelector('.result-card');
+      const ctaRow = card.querySelector('.cta-row');
+
+      // Cambiamos el texto para que el usuario sepa que está cargando
+      btn.textContent = 'Generando imagen...';
+      btn.style.pointerEvents = 'none';
+      vibrate(10);
+
+      // 1. Guardamos los estilos originales
+      const origWidth = card.style.width;
+      const origMargin = card.style.margin;
+
+      // 2. Forzamos un tamaño estándar (450px) para que en todos los móviles salga con la misma proporción
+      card.style.width = '450px';
+      card.style.margin = '0'; 
+      
+      // 3. Escondemos los botones de abajo para que la imagen quede limpia
+      ctaRow.style.display = 'none';
+
+      // 4. Tomamos la "foto" con html2canvas
+      html2canvas(card, {
+        scale: 3, // Multiplica la resolución x3 para que quede súper nítida
+        backgroundColor: '#0b1020', // Fondo oscuro por si acaso
+        useCORS: true
+      }).then(canvas => {
+        // 5. Restauramos todo a la normalidad en la pantalla del usuario
+        card.style.width = origWidth;
+        card.style.margin = origMargin;
+        ctaRow.style.display = 'flex';
+        btn.style.pointerEvents = 'auto';
+        
+        btn.textContent = '¡Descargada!';
+        setTimeout(() => btn.textContent = 'Guardar resultado', 2500);
+
+        // 6. Forzamos la descarga automática de la imagen al móvil/PC
+        const link = document.createElement('a');
+        link.download = 'Mi_Nivel_Torneo_EAFC.png';
+        link.href = canvas.toDataURL('image/png');
+        link.click();
+      });
+    });
+    el.backBtn.addEventListener('click', prevQuestion);
+
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter' && el.screenStart.classList.contains('active')) startQuiz();
+    });
+
+    document.addEventListener('pointerdown', (e) => {
+      const card = e.target.closest('.card, .q-card, .choice, .btn');
+      if (card) {
+        card.animate([
+          { transform: 'translateY(0) scale(1)' },
+          { transform: 'translateY(0) scale(.995)' },
+          { transform: 'translateY(0) scale(1)' }
+        ], { duration: 180, easing: 'ease-out' });
+      }
+    }, { passive:true });
+
+    setProgress();
+    document.getElementById('meterFill').style.width = '0%';
+
+    // ==========================================
+    // SISTEMA DE RANKING ONLINE (GOOGLE SHEETS)
+    // ==========================================
+    
+    // ⚠️ PEGA AQUÍ TU URL DE GOOGLE CUANDO LA TENGAS:
+    const GOOGLE_URL = "https://script.google.com/macros/s/AKfycbxroF3gHf5Hp1hSSRcdHnaeAhEU7c8yseRis4fkF7FY9b2DHQorGN0ujzTMS0CBzpdetA/exec"; 
+
+    const elRankingList = document.getElementById('rankingList');
+    const elRankingForm = document.getElementById('rankingForm');
+    const elPlayerName = document.getElementById('playerName');
+    const elSubmitScoreBtn = document.getElementById('submitScoreBtn');
+    const elRankingMsg = document.getElementById('rankingMsg');
+
+    // Descarga y pinta el ranking al instante
+    function fetchRanking() {
+      if(!GOOGLE_URL || GOOGLE_URL === "TU_URL_DE_GOOGLE_AQUI") {
+        elRankingList.innerHTML = '<div class="note" style="text-align:center;">Ranking inactivo (Falta URL).</div>';
+        return;
+      }
+      fetch(GOOGLE_URL)
+      .then(res => res.json())
+      .then(data => {
+        elRankingList.innerHTML = '';
+        if(data.length === 0) {
+          elRankingList.innerHTML = '<div class="note" style="text-align:center;">Aún no hay nadie. ¡Sé el primero!</div>';
+          return;
+        }
+          // Mostramos los 10 primeros
+        data.slice(0, 10).forEach((p, i) => {
+          const div = document.createElement('div');
+          div.className = `rank-item top-${i + 1}`;
+          div.innerHTML = `
+              <span class="rank-pos">${i + 1}º</span>
+              <span class="rank-name">${p.name}</span>
+              <span class="rank-elo">${p.elo}</span>
+          `;
+          elRankingList.appendChild(div);
+        });
+      }).catch(e => {
+        elRankingList.innerHTML = '<div class="note" style="text-align:center;">Error cargando el ranking.</div>';
+      });
+    }
+
+    // Botón de subir puntuación
+    elSubmitScoreBtn.addEventListener('click', () => {
+      // Limpia el nombre para que nadie pueda inyectar código raro
+      const name = elPlayerName.value.trim().replace(/</g, "&lt;").replace(/>/g, "&gt;");
+      if(!name) { alert("¡Escribe tu nombre para entrar al ranking!"); return; }
+      
+      elSubmitScoreBtn.textContent = 'Subiendo...';
+      elSubmitScoreBtn.disabled = true;
+
+      // Usamos el elo que esté ahora mismo guardado en el LocalStorage o en el HTML
+      const currentElo = document.getElementById('eloValue').textContent;
+
+      // Lo enviamos a Google
+      fetch(`${GOOGLE_URL}?name=${encodeURIComponent(name)}&elo=${currentElo}`)
+      .then(res => res.json())
+      .then(resp => {
+          elRankingForm.classList.add('hidden'); // Ocultamos la caja de texto
+          elRankingMsg.classList.remove('hidden'); // Mostramos el mensaje de éxito
+          fetchRanking(); // Recargamos el ranking para que se vea a sí mismo
+        }).catch(e => {
+          alert("Hubo un error subiendo tu puntuación. Prueba otra vez.");
+          elSubmitScoreBtn.textContent = 'Subir mi nivel';
+          elSubmitScoreBtn.disabled = false;
+        });
+      });
+    </script>
+  </body>
+  </html>
